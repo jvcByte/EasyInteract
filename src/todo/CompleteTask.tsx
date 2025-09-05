@@ -64,7 +64,7 @@ function CompleteTask({ accounts }: CompleteTaskProps) {
     };
 
     return (
-        <div className="md:min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="">
             <div className='max-w-md mx-auto rounded-xl shadow-xl overflow-hidden md:max-w-2xl p-6'>
                 <div className="text-center mb-8">
                     <h1 className="text-xl font-bold">Complete Task</h1>

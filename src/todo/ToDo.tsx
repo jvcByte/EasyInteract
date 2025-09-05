@@ -9,90 +9,98 @@ import UpdateTask from './UpdateTask';
 import { Link } from 'react-router-dom';
 function App() {
 
-  const [accounts, setAccounts] = useState<Array<ByteString>>([]);
-  const [chainId, setChainId] = useState<ByteString>();
+    const [accounts, setAccounts] = useState<Array<ByteString>>([]);
+    const [chainId, setChainId] = useState<ByteString>();
 
-  useEffect(() => {
-    detectProvider().then(({ accounts, chainId }) => {
-      setAccounts(accounts);
-      setChainId(chainId);
-    });
-    ethereum_window?.on?.("accountsChanged", (accounts: Array<ByteString>) =>
-      setAccounts(accounts)
-    );
-    ethereum_window?.on?.("chainChanged", (chainId: ByteString) =>
-      setChainId(chainId)
-    );
-  }, []);
+    useEffect(() => {
+        detectProvider().then(({ accounts, chainId }) => {
+            setAccounts(accounts);
+            setChainId(chainId);
+        });
+        ethereum_window?.on?.("accountsChanged", (accounts: Array<ByteString>) =>
+            setAccounts(accounts)
+        );
+        ethereum_window?.on?.("chainChanged", (chainId: ByteString) =>
+            setChainId(chainId)
+        );
+    }, []);
 
-  useEffect(() => {
-    if (accounts[0] && chainId && parseInt(chainId) === parseInt(celoChainId)) {
-      console.log("Chain Matched");
-    } else {
-      if (!ethereum_window) {
-        alert("Wallet not Found");
-      } else {
-        ethereum_window
-          .request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: celoChainId }],
-          })
-          .catch((switchError) => {
-            console.log({ switchError });
+    useEffect(() => {
+        if (accounts[0] && chainId && parseInt(chainId) === parseInt(celoChainId)) {
+            console.log("Chain Matched");
+        } else {
+            if (!ethereum_window) {
+                alert("Wallet not Found");
+            } else {
+                ethereum_window
+                    .request({
+                        method: "wallet_switchEthereumChain",
+                        params: [{ chainId: celoChainId }],
+                    })
+                    .catch((switchError) => {
+                        console.log({ switchError });
 
-            if (
-              switchError.code === 4902 ||
-              switchError.data.originalError.code === 4902
-            ) {
-              ethereum_window?.request({
-                method: "wallet_addEthereumChain",
-                params: [
-                  {
-                    chainId: celoChainId,
-                    chainName: "Celo Alfajores Testnet",
-                    rpcUrls: [celoRPCUrl],
-                  },
-                ],
-              });
+                        if (
+                            switchError.code === 4902 ||
+                            switchError.data.originalError.code === 4902
+                        ) {
+                            ethereum_window?.request({
+                                method: "wallet_addEthereumChain",
+                                params: [
+                                    {
+                                        chainId: celoChainId,
+                                        chainName: "Celo Alfajores Testnet",
+                                        rpcUrls: [celoRPCUrl],
+                                    },
+                                ],
+                            });
+                        }
+                    });
             }
-          });
-      }
-    }
-  }, [accounts, chainId]);
+        }
+    }, [accounts, chainId]);
 
-  return (
-    <div className=''>
-      <div className='flex justify-start gap-6 w-full'>
-        <Link to="/">Home</Link>
-        <Link to="/todo">Todo</Link>
-        <Link to="/erc20">ERC20</Link>
-      </div>
-      {accounts.length > 0 ? (
-        <div className="mt-6 p-4 bg-green-50 rounded-lg">
-          <p className="font-medium text-green-800">Connected Wallet:</p>
-          <p className="text-sm font-mono text-gray-600 break-all">{accounts[0]}</p>
+    return (
+        <div className=''>
+            <div className='flex justify-start gap-6 w-full'>
+                <Link to="/">Home</Link>
+                <Link to="/todo">Todo</Link>
+                <Link to="/erc20">ERC20</Link>
+            </div>
+            {accounts.length > 0 ? (
+                <div className="mt-6 p-4 bg-green-50 rounded-lg">
+                    <p className="font-medium text-green-800">Connected Wallet:</p>
+                    <p className="text-sm font-mono text-gray-600 break-all">{accounts[0]}</p>
+                </div>
+            ) : (
+                <div className="mt-6 p-4 bg-yellow-50 rounded-lg text-center">
+                    <p className="text-yellow-800 mb-2">Wallet not connected</p>
+                    <button
+                        onClick={connectWallet}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    >
+                        Connect Wallet
+                    </button>
+                </div>
+            )}
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-8 w-full p-4'>
+                <div className="w-full">
+                    <CreateTask accounts={accounts} />
+                </div>
+                <div className="w-full">
+                    <GetTask />
+                </div>
+                <div className="w-full">
+                    <CompleteTask accounts={accounts} />
+                </div>
+                <div className="w-full">
+                    <UpdateTask accounts={accounts} />
+                </div>
+            </div>
         </div>
-      ) : (
-        <div className="mt-6 p-4 bg-yellow-50 rounded-lg text-center">
-          <p className="text-yellow-800 mb-2">Wallet not connected</p>
-          <button
-            onClick={connectWallet}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-          >
-            Connect Wallet
-          </button>
-        </div>
-      )}
 
-      <div className='flex justify-center flex-col items-center md:h-screen md:flex-row gap-2'>
-        <CreateTask accounts={accounts} />
-        <GetTask />
-        <CompleteTask accounts={accounts} />
-        <UpdateTask accounts={accounts} />
-      </div>
-    </div>
-
-  );
+    );
 }
 
 export default App;
