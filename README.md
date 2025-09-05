@@ -1,69 +1,44 @@
-# React + TypeScript + Vite
+# Todo DApp Project Overview
+This is a collection of decentralized applications (DApps). Has 3 main sections, ToDo section, ERC20  interaction section and the section which is yet to be implemented. 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### ToDo Section
+This section is a simple todo list application that allows users to create, view, and mark tasks as complete.
 
-Currently, two official plugins are available:
+#### Key Components
+- CreateTask: For adding new tasks
+- GetTask: For viewing task details
+- CompleteTask: For marking tasks as complete
+- UpdateTask: For modifying existing tasks
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#### Features
+- Task Management
+- Create new tasks with descriptions
+- View task details by ID
+- Mark tasks as complete
+- Update existing task descriptions
 
-## Expanding the ESLint configuration
+### ERC20 Section
+This section is a simple ERC20 token interaction application that allows users to interact with ERC20 tokens.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+#### Key Components
+- ERC20TokenInteraction
+: For interacting with ERC20 tokens
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+#### Features
+- ERC20 token interaction
+- View token balance
+- Transfer tokens
+- Approve tokens
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Blockchain Integration
+- Built on Celo Alfajores testnet and Eth Sepolia testnet
+- Uses viem for ABI encoding/decoding
+- Direct JSON-RPC calls to the blockchain
+- Wallet integration using EIP-1193 and EIP-6963
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Technical Stack
+- Frontend: React + TypeScript
+- Styling: Tailwind CSS
+- State Management: React hooks
+- Routing: React Router
+- Build Tool: Vite
