@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ethereum_window } from './lib/helperFunctions';
-import { encodeCompleteTask } from './lib/encodeData';
-import { celoToDoContractAddress, celoChainId } from './constants/contract';
-import type { ByteString } from './lib/types';
+import { ethereum_window } from '../lib/helperFunctions';
+import { encodeCompleteTask } from '../lib/encodeData';
+import { celoToDoContractAddress, celoChainId } from '../constants/contract';
+import type { ByteString } from '../lib/types';
 
 interface CompleteTaskProps {
     accounts: ByteString[];
@@ -13,11 +13,11 @@ function CompleteTask({ accounts }: CompleteTaskProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
-    
+
 
     const completeTask = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!taskId.trim()) {
             setError('Please enter a task ID');
             return;
@@ -34,7 +34,7 @@ function CompleteTask({ accounts }: CompleteTaskProps) {
             }
 
             const calldata = encodeCompleteTask(taskIdNum);
-            
+
             if (!ethereum_window) {
                 throw new Error('Wallet not found. Please install MetaMask.');
             }
@@ -51,7 +51,7 @@ function CompleteTask({ accounts }: CompleteTaskProps) {
 
             setSuccess(true);
             setTaskId('');
-            
+
         } catch (error) {
             console.error('Error completing task:', error);
             const errorMessage = error instanceof Error ? error.message :
