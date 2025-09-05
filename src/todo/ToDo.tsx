@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { celoChainId, celoRPCUrl } from '../constants/contract';
 import CompleteTask from './CompleteTask';
 import UpdateTask from './UpdateTask';
-import { Link } from 'react-router-dom';
+import Header from '../component/Header';
 function App() {
 
     const [accounts, setAccounts] = useState<Array<ByteString>>([]);
@@ -62,11 +62,7 @@ function App() {
 
     return (
         <div className=''>
-            <div className='flex justify-start gap-6 w-full'>
-                <Link to="/">Home</Link>
-                <Link to="/todo">Todo</Link>
-                <Link to="/erc20">ERC20</Link>
-            </div>
+            <Header />
             {accounts.length > 0 ? (
                 <div className="mt-6 p-4 bg-green-50 rounded-lg">
                     <p className="font-medium text-green-800">Connected Wallet:</p>
