@@ -84,7 +84,7 @@ function App() {
         </div>
       )}
 
-      <div className='flex justify-center flex-col wrap items-center md:h-screen md:flex-row gap-2'>
+      <div className='flex justify-center flex-col items-center md:h-screen md:flex-row gap-2'>
         <CreateTask accounts={accounts} />
         <GetTask />
         <CompleteTask accounts={accounts} />
