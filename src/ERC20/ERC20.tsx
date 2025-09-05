@@ -1,14 +1,14 @@
-import { Link } from "react-router-dom";
+import Header from "../component/Header";
+
 export default function ERC20() {
     return (
-        <div>
-
-            <div className='flex justify-start gap-6 w-full'>
-                <Link to="/">Home</Link>
-                <Link to="/todo">Todo</Link>
-                <Link to="/erc20">ERC20</Link>
+        <div className="">
+            <div>
+                <Header />
             </div>
-            ERC20
+            <div>
+                ERC20
+            </div>
         </div>
     );
 }
