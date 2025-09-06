@@ -356,8 +356,8 @@ export default function Interact() {
                 )}
             </div>
             <div>
-                <h2 className="text-2xl font-bold mb-2 mt-6">Easy Interact</h2>
-                <h2 className="text-lg font-base mb-6">
+                <h2 className="text-2xl font-bold mb-2 mt-6 text-[#1e293b] dark:text-white">Easy Interact</h2>
+                <h2 className="text-lg font-base mb-6 text-[#1e293b] dark:text-white">
                     Simple interface for interacting with EVM compatible contracts.
                     Supply the Network name, Contract address, and ABI to interact with the contract.
                 </h2>
@@ -473,7 +473,7 @@ export default function Interact() {
 
                         <button
                             onClick={parseAbiInput}
-                            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-black dark:text-white font-medium rounded-md"
+                            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 font-medium rounded-md"
                         >
                             Parse ABI & Generate UI
                         </button>
