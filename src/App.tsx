@@ -1,4 +1,4 @@
-import Header from './component/Header';
+import Interact from './contract-interact/Interact';
 function App() {
 
 
@@ -6,14 +6,8 @@ function App() {
   return (
     <div className=''>
       <div>
-        <Header />
-      </div>
-      <div>
         <div>
-          Block Chain DApp
-        </div>
-        <div>
-          Wallet
+          <Interact />
         </div>
       </div>
     </div>

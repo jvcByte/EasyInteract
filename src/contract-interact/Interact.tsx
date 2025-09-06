@@ -256,17 +256,20 @@ export default function Interact() {
             <Header />
             <div>
                 <h2 className="text-2xl font-bold mb-2 mt-6">Easy Interact</h2>
-                <h2 className="text-xl font-base mb-6">Simple interface for interacting with EVM compatible contracts</h2>
+                <h2 className="text-lg font-base mb-6">
+                    Simple interface for interacting with EVM compatible contracts.
+                    Supply the Network name, Contract address, and ABI to interact with the contract.
+                </h2>
             </div>
 
             <div className="flex gap-4 w-full p-4">
-                
+
                 <div className="w-1/4 h-fit bg-gray-800 p-6 rounded-lg mb-8">
                     <h3 className="text-xl font-semibold mb-4">Contract Details</h3>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">Network</label>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Network Name</label>
                             <div className="text-gray-900">
                                 <Select
                                     value={selectedChain}
@@ -284,7 +287,7 @@ export default function Interact() {
                                         label: chain.name
                                     }))}
                                     classNamePrefix="react-select"
-                                    placeholder="Search network..."
+                                    placeholder="Select Network... e.g. Ethereum"
                                     isSearchable={true}
                                     styles={{
                                         control: (base) => ({
