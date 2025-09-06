@@ -1,7 +1,7 @@
 import Header from "../component/Header";
 import { useEffect, useState } from "react";
-import type { ByteString } from "../lib/types";
-import { detectProvider } from "../lib/helperFunctions";
+import type { ByteString } from "../../lib/types";
+import { detectProvider } from "../../lib/helperFunctions";
 export default function ERC20() {
     const [accounts, setAccounts] = useState<Array<ByteString>>([]);
     useEffect(() => {

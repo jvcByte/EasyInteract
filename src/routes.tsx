@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import App from "./App";
-import ToDo from "./todo/ToDo";
-import ERC20 from "./ERC20/ERC20";
-import UpdateTask from "./todo/UpdateTask";
-import Interact from "./contract-interact/Interact";
+import App from "./app/App";
+import ToDo from "./app/todo/ToDo";
+import ERC20 from "./app/ERC20/ERC20";
+import UpdateTask from "./app/todo/UpdateTask";
+import Interact from "./app/contract-interact/Interact";
 
 const AppRoutes = () => {
     return (

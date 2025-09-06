@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { encodeCreateTask } from '../lib/encodeData';
-import { ethereum_window } from '../lib/helperFunctions';
-import { celoToDoContractAddress, celoChainId } from '../constants/contract';
-import type { CreateTaskProps } from '../lib/types';
+import { encodeCreateTask } from '../../lib/encodeData';
+import { ethereum_window } from '../../lib/helperFunctions';
+import { celoToDoContractAddress, celoChainId } from '../../constants/contract';
+import type { CreateTaskProps } from '../../lib/types';
 
 function CreateTask({ accounts }: CreateTaskProps) {
     const [description, setDescription] = useState('');

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { decodeTodoStruct } from '../lib/DecodeData';
-import { celoToDoContractAddress, celoRPCUrl } from '../constants/contract';
-import type { ByteString } from '../lib/types';
+import { decodeTodoStruct } from '../../lib/DecodeData';
+import { celoToDoContractAddress, celoRPCUrl } from '../../constants/contract';
+import type { ByteString } from '../../lib/types';
 
 function GetTask() {
     const [task, setTask] = useState<{

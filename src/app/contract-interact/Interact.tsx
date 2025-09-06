@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { isAddress } from 'viem';
 import Select from 'react-select';
 import Header from "../component/Header";
-import { publicClient, walletClient, availableChains, type ChainName } from '../lib/client';
-import type { ContractFunction, FunctionState, ByteString } from '../lib/types';
-import { renderResult } from '../lib/helperFunctions';
+import { publicClient, walletClient, availableChains, type ChainName } from '../../lib/client';
+import type { ContractFunction, FunctionState, ByteString } from '../../lib/types';
+import { renderResult } from '../../lib/helperFunctions';
 
 export default function Interact() {
     const [rpcUrl, setRpcUrl] = useState("");

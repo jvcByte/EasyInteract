@@ -1,9 +1,9 @@
 import GetTask from './GetTask';
 import CreateTask from './CreateTask';
-import { connectWallet, detectProvider, ethereum_window } from '../lib/helperFunctions';
-import type { ByteString } from '../lib/types';
+import { connectWallet, detectProvider, ethereum_window } from '../../lib/helperFunctions';
+import type { ByteString } from '../../lib/types';
 import { useEffect, useState } from 'react';
-import { celoChainId, celoRPCUrl } from '../constants/contract';
+import { celoChainId, celoRPCUrl } from '../../constants/contract';
 import CompleteTask from './CompleteTask';
 import UpdateTask from './UpdateTask';
 import Header from '../component/Header';

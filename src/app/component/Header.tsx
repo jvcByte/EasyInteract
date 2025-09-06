@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import type { ByteString } from "../lib/types";
+import type { ByteString } from "../../lib/types";
 
-export default function Header({accounts}: {accounts: Array<ByteString>}) {
+export default function Header({ accounts }: { accounts: Array<ByteString> }) {
     return (
         <div className="flex justify-between w-full">
             <div className='flex justify-start gap-6 w-full p-2'>

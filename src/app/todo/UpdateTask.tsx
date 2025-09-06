@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { encodeUpdateTask } from '../lib/encodeData';
-import { ethereum_window } from '../lib/helperFunctions';
-import { celoToDoContractAddress, celoChainId } from '../constants/contract';
-import type { ByteString } from '../lib/types';
+import { encodeUpdateTask } from '../../lib/encodeData';
+import { ethereum_window } from '../../lib/helperFunctions';
+import { celoToDoContractAddress, celoChainId } from '../../constants/contract';
+import type { ByteString } from '../../lib/types';
 
 interface UpdateTaskProps {
   accounts: ByteString[];

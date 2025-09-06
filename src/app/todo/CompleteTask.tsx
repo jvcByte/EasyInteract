@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ethereum_window } from '../lib/helperFunctions';
-import { encodeCompleteTask } from '../lib/encodeData';
-import { celoToDoContractAddress, celoChainId } from '../constants/contract';
-import type { ByteString } from '../lib/types';
+import { ethereum_window } from '../../lib/helperFunctions';
+import { encodeCompleteTask } from '../../lib/encodeData';
+import { celoToDoContractAddress, celoChainId } from '../../constants/contract';
+import type { ByteString } from '../../lib/types';
 
 interface CompleteTaskProps {
     accounts: ByteString[];
