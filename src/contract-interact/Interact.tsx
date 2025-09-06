@@ -359,7 +359,7 @@ export default function Interact() {
                 <h2 className="text-2xl font-bold mb-2 mt-6 text-[#1e293b] dark:text-white">Easy Interact</h2>
                 <h2 className="text-lg font-base mb-6 text-[#1e293b] dark:text-white">
                     Simple interface for interacting with EVM compatible contracts.
-                    Choose the Network name, Supply the Contract address, and ABI to interact with the contract.
+                    Select the Network, Supply the Contract address, and ABI to interact with the contract.
                 </h2>
             </div>
 
