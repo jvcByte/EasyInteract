@@ -363,9 +363,9 @@ export default function Interact() {
                 </h2>
             </div>
 
-            <div className="flex gap-4 w-full p-4">
+            <div className="flex flex-col md:flex-row gap-4 w-full p-4">
 
-                <div className="w-1/4 h-fit bg-gray-800 p-6 rounded-lg mb-8">
+                <div className="w-full md:w-1/4 h-fit bg-gray-800 p-6 rounded-lg mb-8">
                     <h3 className="text-xl font-semibold mb-4">Contract Details</h3>
 
                     <div className="space-y-4">
@@ -487,7 +487,7 @@ export default function Interact() {
                 </div>
 
                 {functions.length > 0 && (
-                    <div className='w-3/4'>
+                    <div className='w-full md:w-3/4'>
                         <h3 className="text-xl font-semibold mb-4">Contract Functions</h3>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             {functions.map(renderFunctionCard)}
