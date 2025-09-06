@@ -1,7 +1,19 @@
 import { useState } from 'react';
 import { isAddress } from 'viem';
-import { ALCHEMY_RPC_URL, SEPOLIA_TODO_CONTRACT_ADDRESS } from '../constants/contract';
+import { celoRPCUrl, celoToDoContractAddress } from '../constants/contract';
 import Header from "../component/Header";
+import { publicClient } from '../lib/client';
+
+// Helper function to safely stringify objects that might contain BigInt
+const safeStringify = (obj: any, indent = 2) => {
+    const replacer = (key: string, value: any) => {
+        if (typeof value === 'bigint') {
+            return value.toString();
+        }
+        return value;
+    };
+    return JSON.stringify(obj, replacer, indent);
+};
 
 type FunctionInput = {
     name: string;
@@ -22,8 +34,8 @@ type FunctionState = {
 };
 
 export default function Interact() {
-    const [rpcUrl, setRpcUrl] = useState(ALCHEMY_RPC_URL);
-    const [contractAddress, setContractAddress] = useState(SEPOLIA_TODO_CONTRACT_ADDRESS);
+    const [rpcUrl, setRpcUrl] = useState(celoRPCUrl);
+    const [contractAddress, setContractAddress] = useState(celoToDoContractAddress);
     const [abiInput, setAbiInput] = useState('');
     const [functions, setFunctions] = useState<ContractFunction[]>([]);
     const [functionStates, setFunctionStates] = useState<FunctionState>({});
@@ -123,21 +135,20 @@ export default function Interact() {
                 return value;
             });
 
-            // For demo purposes, we'll just show the call data
+            // Make the actual contract call
+            const res = await publicClient.readContract({
+                address: contractAddress as `0x${string}`,
+                abi: JSON.parse(abiInput),
+                functionName: func.name,
+                args
+            });
+
             const result = {
                 function: func.name,
                 args,
                 timestamp: new Date().toISOString(),
-                // In a real implementation, you would use viem to make the actual contract call
-                // const client = createPublicClient({ transport: http(rpcUrl) });
-                // const result = await client.readContract({
-                //     address: contractAddress,
-                //     abi: JSON.parse(abiInput),
-                //     functionName: func.name,
-                //     args
-                // });
-                result: 'Function call would be executed here with viem client',
-                note: 'Uncomment and implement the viem client code to make actual contract calls'
+                result: res,
+                note: 'Function call completed successfully'
             };
 
             setResults(prev => ({
@@ -221,7 +232,7 @@ export default function Interact() {
                 {result && (
                     <div className="mt-3 p-2 bg-gray-700 rounded text-sm overflow-auto">
                         <pre className="whitespace-pre-wrap text-gray-200">
-                            {JSON.stringify(result, null, 2)}
+                            {safeStringify(result)}
                         </pre>
                     </div>
                 )}
