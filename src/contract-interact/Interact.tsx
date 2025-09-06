@@ -374,7 +374,7 @@ export default function Interact() {
                             onClick={parseAbiInput}
                             className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-black dark:text-white font-medium rounded-md"
                         >
-                            Parse ABI & Generate UI
+                            Parse ABI & Generate UI 
                         </button>
 
                         {error && (
