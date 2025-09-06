@@ -26,7 +26,7 @@ export default function Interact() {
         }).requestAddresses();
         setAccounts([address]);
     };
-    
+
 
     const parseAbiInput = () => {
         try {
@@ -79,27 +79,45 @@ export default function Interact() {
         }));
     };
 
-    const callFunction = async (func: ContractFunction) => {
-
-        if (!isAddress(contractAddress)) {
-            setError('Please provide a valid contract address');
+    const callFunction = async (func: ContractFunction, isSimulation: boolean = false) => {
+        if (!contractAddress) {
+            setError('Contract address is required');
             return;
         }
 
-        setIsLoading(true);
-        setError('');
+        if (!isAddress(contractAddress)) {
+            setError('Invalid contract address');
+            return;
+        }
+
+        if (!selectedChain) {
+            setError('Please select a network');
+            return;
+        }
+
+        if (func.stateMutability !== 'view' && func.stateMutability !== 'pure' && !accounts[0]) {
+            setError('Please connect your wallet to execute this function');
+            return;
+        }
 
         try {
+            setIsLoading(true);
+            setError('');
+
+            const client = publicClient({
+                chainName: selectedChain.value,
+                rpcUrl: rpcUrl
+            });
+
             const inputValues = functionStates[func.name] || {};
             const args = func.inputs.map((input, index) => {
                 const inputName = input.name || `param_${index}`;
-                // Try to parse the input value based on its type
                 const value = inputValues[inputName] || '';
 
                 // Basic type conversion
                 try {
                     if (input.type.includes('int')) {
-                        return parseInt(value) || 0;
+                        return BigInt(value) || 0n;
                     } else if (input.type === 'bool') {
                         return value.toLowerCase() === 'true';
                     } else if (input.type === 'address') {
@@ -116,28 +134,77 @@ export default function Interact() {
                 return value;
             });
 
-            // Make the actual contract call
-            if (!selectedChain) {
-                throw new Error('Please select a network');
+            // For view/pure functions, just read
+            if (func.stateMutability === 'view' || func.stateMutability === 'pure') {
+                const res = await client.readContract({
+                    address: contractAddress as `0x${string}`,
+                    abi: JSON.parse(abiInput),
+                    functionName: func.name,
+                    args
+                });
+
+                const result = {
+                    function: func.name,
+                    args,
+                    timestamp: new Date().toISOString(),
+                    result: res,
+                    note: 'Function call completed successfully'
+                };
+
+                setResults(prev => ({
+                    ...prev,
+                    [func.name]: result
+                }));
+                return;
             }
-            const client = publicClient({
+
+            // For write functions, handle simulation and execution
+            const account = accounts[0];
+            const wClient = walletClient({
                 chainName: selectedChain.value,
                 rpcUrl: rpcUrl
             });
 
-            const res = await client.readContract({
+            // Simulate the transaction first
+            const { request } = await client.simulateContract({
                 address: contractAddress as `0x${string}`,
                 abi: JSON.parse(abiInput),
                 functionName: func.name,
-                args
+                args,
+                account: account as `0x${string}`
             });
+
+            if (isSimulation) {
+                // Just show the simulation result
+                const result = {
+                    function: func.name,
+                    args,
+                    timestamp: new Date().toISOString(),
+                    result: request,
+                    note: 'Simulation successful. Ready to execute.',
+                    isSimulation: true
+                };
+
+                setResults(prev => ({
+                    ...prev,
+                    [func.name]: result
+                }));
+                return;
+            }
+
+            // Execute the transaction
+            const hash = await wClient.writeContract(request);
+
+            // Wait for transaction receipt
+            const receipt = await client.waitForTransactionReceipt({ hash });
 
             const result = {
                 function: func.name,
                 args,
                 timestamp: new Date().toISOString(),
-                result: res,
-                note: 'Function call completed successfully'
+                result: receipt,
+                note: 'Transaction executed successfully',
+                transactionHash: hash
             };
 
             setResults(prev => ({
@@ -146,8 +213,8 @@ export default function Interact() {
             }));
 
         } catch (err) {
-            console.error('Error calling function:', err);
-            setError(`Error: ${err instanceof Error ? err.message : 'Failed to call function'}`);
+            console.error('Error:', err);
+            setError(`Error: ${err instanceof Error ? err.message : 'Operation failed'}`);
         } finally {
             setIsLoading(false);
         }
@@ -207,16 +274,30 @@ export default function Interact() {
                     </div>
                 )}
 
-                <button
-                    onClick={() => callFunction(func)}
-                    disabled={isLoading}
-                    className={`w-full py-2 px-4 rounded-md ${isView
-                        ? 'bg-blue-600 hover:bg-blue-700'
-                        : 'bg-yellow-600 hover:bg-yellow-700'
-                        } text-white font-medium disabled:opacity-50`}
-                >
-                    {isLoading ? 'Processing...' : isView ? 'Read' : 'Write'}
-                </button>
+                <div className="flex gap-2">
+                    {!isView && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                callFunction(func, true);
+                            }}
+                            disabled={isLoading}
+                            className="flex-1 py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md disabled:opacity-50"
+                        >
+                            {isLoading ? 'Processing...' : 'Simulate'}
+                        </button>
+                    )}
+                    <button
+                        onClick={() => callFunction(func, false)}
+                        disabled={isLoading}
+                        className={`flex-1 py-2 px-4 rounded-md ${isView
+                                ? 'bg-blue-600 hover:bg-blue-700'
+                                : 'bg-yellow-600 hover:bg-yellow-700'
+                            } text-white font-medium disabled:opacity-50`}
+                    >
+                        {isLoading ? 'Processing...' : isView ? 'Read' : 'Write'}
+                    </button>
+                </div>
 
                 {result && (() => {
                     const func = functions.find(f => f.name === result.function);
