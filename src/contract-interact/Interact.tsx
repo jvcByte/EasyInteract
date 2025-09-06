@@ -238,10 +238,6 @@ export default function Interact() {
     };
 
     const callFunction = async (func: ContractFunction) => {
-        if (!rpcUrl) {
-            setError('Please provide an RPC URL');
-            return;
-        }
 
         if (!isAddress(contractAddress)) {
             setError('Please provide a valid contract address');
@@ -434,17 +430,6 @@ export default function Interact() {
                     <h3 className="text-xl font-semibold mb-4">Contract Details</h3>
 
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">RPC URL</label>
-                            <input
-                                type="text"
-                                value={rpcUrl}
-                                onChange={(e) => setRpcUrl(e.target.value)}
-                                placeholder="https://..."
-                                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
-                            />
-                        </div>
-
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-1">Network</label>
                             <select
