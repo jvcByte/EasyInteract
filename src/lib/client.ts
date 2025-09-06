@@ -1,10 +1,11 @@
-import { createPublicClient, http, type Chain } from 'viem'
+import { createPublicClient, createWalletClient, custom, http, type Chain } from 'viem'
 import * as allChains from 'viem/chains'
-
+import { ethereum_window } from './helperFunctions'
+import { type EthereumProvider } from './types'
 /**
  * Type for supported chains
  */
-export type ChainName = keyof typeof allChains
+type ChainName = keyof typeof allChains
 
 /**
  * Interface for public client properties
@@ -20,16 +21,29 @@ interface PublicClientProps {
  * @param rpcUrl - The URL of the RPC endpoint for the chain
  * @returns The public client for the specified chain
  */
-export default function publicClient({ 
-  chainName, 
+function publicClient({
+  chainName,
   rpcUrl,
-  ...props 
+  ...props
 }: PublicClientProps) {
   const chain = allChains[chainName] as Chain
-  
+
   return createPublicClient({
     chain,
     transport: http(rpcUrl),
+    ...props
+  })
+}
+
+function walletClient({
+  chainName,
+  ...props
+}: PublicClientProps) {
+  const chain = allChains[chainName] as Chain
+
+  return createWalletClient({
+    chain,
+    transport: custom(ethereum_window as EthereumProvider),
     ...props
   })
 }
@@ -38,9 +52,19 @@ export default function publicClient({
  * Export all available chains for UI selection
  * @returns An array of objects containing chain information
  */
-export const availableChains = Object.entries(allChains).map(([name, chain]) => ({
+const availableChains = Object.entries(allChains).map(([name, chain]) => ({
   id: name,
   name: chain.name,
   nativeCurrency: chain.nativeCurrency,
   rpcUrls: chain.rpcUrls
 }))
+
+export {
+  publicClient,
+  walletClient,
+  availableChains
+}
+
+export type {
+  ChainName,
+}

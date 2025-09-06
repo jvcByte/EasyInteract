@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { isAddress } from 'viem';
 import Select from 'react-select';
 import Header from "../component/Header";
-import publicClient, { availableChains, type ChainName } from '../lib/client';
-import { type ContractFunction, type FunctionState } from '../lib/types';
+import { publicClient, walletClient, availableChains, type ChainName } from '../lib/client';
+import type { ContractFunction, FunctionState, ByteString } from '../lib/types';
 import { renderResult } from '../lib/helperFunctions';
 
 export default function Interact() {
@@ -17,6 +17,16 @@ export default function Interact() {
     const [results, setResults] = useState<{ [key: string]: any }>({});
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [accounts, setAccounts] = useState<Array<ByteString>>([]);
+
+
+    const connectWallet = async () => {
+        const [address] = await walletClient({
+            chainName: selectedChain?.value as ChainName
+        }).requestAddresses();
+        setAccounts([address]);
+    };
+    
 
     const parseAbiInput = () => {
         try {
@@ -253,7 +263,15 @@ export default function Interact() {
 
     return (
         <div className="w-[100vw] h-[100vh] text-white px-8 py-4">
-            <Header />
+            <div>
+                {accounts.length > 0 ? (
+                    <Header accounts={accounts} />
+                ) : (
+                    <div className='flex justify-end'>
+                        <button onClick={connectWallet}>Connect Wallet</button>
+                    </div>
+                )}
+            </div>
             <div>
                 <h2 className="text-2xl font-bold mb-2 mt-6">Easy Interact</h2>
                 <h2 className="text-lg font-base mb-6">
@@ -374,7 +392,7 @@ export default function Interact() {
                             onClick={parseAbiInput}
                             className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-black dark:text-white font-medium rounded-md"
                         >
-                            Parse ABI & Generate UI 
+                            Parse ABI & Generate UI
                         </button>
 
                         {error && (

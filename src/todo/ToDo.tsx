@@ -62,7 +62,7 @@ function App() {
 
     return (
         <div className='w-[100vw] h-[100vh] text-white px-8 py-4'>
-            <Header />
+            <Header accounts={accounts} />
             {accounts.length > 0 ? (
                 <div className="mt-6 p-4 bg-green-50 rounded-lg">
                     <p className="font-medium text-green-800">Connected Wallet:</p>
