@@ -252,15 +252,16 @@ export default function Interact() {
     };
 
     return (
-        <div className="w-[100vw] h-[100vh] text-white">
+        <div className="w-[100vw] h-[100vh] text-white px-8 py-4">
             <Header />
             <div>
-                <h2 className="text-2xl font-bold mb-6">Smart Contract Interaction</h2>
+                <h2 className="text-2xl font-bold mb-2 mt-6">Easy Interact</h2>
+                <h2 className="text-xl font-base mb-6">Simple interface for interacting with EVM compatible contracts</h2>
             </div>
 
-            <div className="flex flex-row gap-4 w-full p-4">
+            <div className="flex gap-4 w-full p-4">
                 
-                <div className="bg-gray-800 p-6 rounded-lg mb-8">
+                <div className="w-1/4 h-fit bg-gray-800 p-6 rounded-lg mb-8">
                     <h3 className="text-xl font-semibold mb-4">Contract Details</h3>
 
                     <div className="space-y-4">
@@ -382,7 +383,7 @@ export default function Interact() {
                 </div>
 
                 {functions.length > 0 && (
-                    <div className='col-span-1'>
+                    <div className='w-3/4'>
                         <h3 className="text-xl font-semibold mb-4">Contract Functions</h3>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             {functions.map(renderFunctionCard)}
