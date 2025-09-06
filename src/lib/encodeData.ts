@@ -3,7 +3,7 @@ import { TODO_ABI } from '../constants/contract';
 import type { ByteString } from './types';
 
 /**
- * Encodes the function call for createTask
+ * Encodes the data for createTask function call into EVM readable format
  * @param description - The task description to encode
  * @returns The encoded function data
  */
@@ -16,7 +16,7 @@ export const encodeCreateTask = (description: string): ByteString => {
 };
 
 /**
- * Encodes the function call for getTask
+ * Encodes the data for getTask function call into EVM readable format
  * @param taskId - The task ID to fetch
  * @returns The encoded function data
  */
@@ -29,7 +29,7 @@ export const encodeGetTask = (taskId: number): ByteString => {
 };
 
 /**
- * Encodes the function call for completeTask
+ * Encodes the data for completeTask function call into EVM readable format
  * @param taskId - The task ID to mark as complete
  * @returns The encoded function data
  */
@@ -42,7 +42,7 @@ export const encodeCompleteTask = (taskId: number): ByteString => {
 };
 
 /**
- * Encodes the function call for updateTask
+ * Encodes the data for updateTask function call into EVM readable format
  * @param taskId - The task ID to update
  * @param description - The new task description
  * @returns The encoded function data

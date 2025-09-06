@@ -1,5 +1,20 @@
 # Todo DApp Project Overview
-This is a collection of decentralized applications (DApps). Has 3 main sections, ToDo section, ERC20  interaction section and the section which is yet to be implemented. 
+This is a collection of decentralized applications (DApps). Has 3 main sections, Easy Interact section, ToDo section, and ERC20  interaction section. 
+
+### Easy Interact Section
+This section is a simple contract interaction application that allows users to interact with contracts on various EVM-compatible blockchains. it's a tool i use to easily interact with contracts.
+
+#### Key Components
+- Interact: For interacting with contracts
+- 
+
+#### Features
+- Network Selection: Users can select from various EVM-compatible networks through a searchable dropdown
+- Dynamic RPC URLs: Automatically updates RPC endpoints when switching between networks
+- ABI Parser: Parses contract ABIs to generate interactive UI components
+- Function Discovery: Automatically detects and lists all available functions from the ABI
+- Type-Safe Inputs: Provides appropriate input fields based on function parameter types
+- Read/Write Operations: Supports both view/pure (read) and state-changing (write) functions
 
 ### ToDo Section
 This section is a simple todo list application that allows users to create, view, and mark tasks as complete.

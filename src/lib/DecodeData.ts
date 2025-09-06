@@ -1,6 +1,11 @@
 import { decodeAbiParameters } from 'viem';
 import type { ByteString } from './types';
 
+/**
+ * Decodes the data for todo struct from EVM readable format to JavaScript object
+ * @param data - The data to decode
+ * @returns The decoded todo struct
+ */
 const decodeTodoStruct = (data: ByteString) => {
     try {
         return decodeAbiParameters(

@@ -1,8 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { WindowEthereum, ByteString } from "./types";
 
+/**
+ * Reference to the browser's Ethereum provider (e.g., MetaMask)
+ * @type {EthereumProvider}
+ */
 const ethereum_window = (window as WindowEthereum).ethereum;
 
+/**
+ * Detects if an Ethereum provider is available and retrieves account information
+ * @async
+ * @returns {Promise<{accounts: Array<ByteString>, chainId: ByteString | undefined}>}
+ * Returns connected accounts and chain ID if provider is available
+ */
 const detectProvider = async () => {
     if (typeof ethereum_window !== "undefined") {
         console.log("Wallet Found");
@@ -23,6 +33,11 @@ const detectProvider = async () => {
     }
 };
 
+/**
+ * Requests the user to connect their Ethereum wallet
+ * @async
+ * @throws {Error} If no Ethereum provider is found
+ */
 const connectWallet = async () => {
     if (!ethereum_window) {
         alert("Wallet not Found");
@@ -36,7 +51,11 @@ const connectWallet = async () => {
 
 
 
-// Check if the result matches EIP-712 domain structure
+/**
+ * Checks if an object matches the EIP-712 domain structure
+ * @param {any} obj - The object to check
+ * @returns {boolean} True if the object has all required EIP-712 domain fields
+ */
 const isEIP712Domain = (obj: any) => {
     const keys = obj ? Object.keys(obj) : [];
     return (
@@ -48,7 +67,11 @@ const isEIP712Domain = (obj: any) => {
     );
 };
 
-// Helper to format EIP-712 domain data
+/**
+ * Renders EIP-712 domain data in a formatted way
+ * @param {Object} domain - The domain object to render
+ * @returns {JSX.Element} Formatted domain data as React components
+ */
 const renderEIP712Domain = (domain: any) => {
     const fields = [
         { key: 'name', label: 'Name', type: 'string' },
@@ -88,6 +111,12 @@ const renderEIP712Domain = (domain: any) => {
     );
 };
 
+/**
+ * Renders the result of a contract call in a user-friendly format
+ * @param {any} result - The value to render
+ * @param {Array<{type: string, name?: string}>} [outputTypes] - Optional type information for better formatting
+ * @returns {JSX.Element} Formatted result as React components
+ */
 const renderResult = (result: any, outputTypes?: { type: string; name?: string }[]) => {
     if (result === undefined || result === null) {
         return <div className="text-gray-400 italic">No return value</div>;
@@ -160,6 +189,12 @@ const renderResult = (result: any, outputTypes?: { type: string; name?: string }
     );
 };
 
+/**
+ * Formats a single value based on its type
+ * @param {any} value - The value to format
+ * @param {string} [type] - Optional type hint (e.g., 'address', 'uint256', 'bool')
+ * @returns {string | JSX.Element} Formatted string or React component
+ */
 const renderValue = (value: any, type?: string) => {
     // Special handling for empty arrays
     if (Array.isArray(value) && value.length === 0) {
