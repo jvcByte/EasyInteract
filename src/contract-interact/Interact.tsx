@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { isAddress } from 'viem';
+import Select from 'react-select';
 import Header from "../component/Header";
 import publicClient, { availableChains, type ChainName } from '../lib/client';
 
@@ -178,7 +179,7 @@ const renderValue = (value: any, type?: string) => {
 export default function Interact() {
     const [rpcUrl, setRpcUrl] = useState("");
     const [contractAddress, setContractAddress] = useState("");
-    const [selectedChainId, setSelectedChainId] = useState<ChainName>('sepolia');
+    const [selectedChain, setSelectedChain] = useState<{ value: ChainName; label: string } | null>();
     const [abiInput, setAbiInput] = useState('');
     const [functions, setFunctions] = useState<ContractFunction[]>([]);
     const [functionStates, setFunctionStates] = useState<FunctionState>({});
@@ -275,14 +276,14 @@ export default function Interact() {
             });
 
             // Make the actual contract call
-            if (!selectedChainId) {
+            if (!selectedChain) {
                 throw new Error('Please select a network');
             }
-            const client = publicClient({ 
-                chainName: selectedChainId,
+            const client = publicClient({
+                chainName: selectedChain.value,
                 rpcUrl: rpcUrl
             });
-            
+
             const res = await client.readContract({
                 address: contractAddress as `0x${string}`,
                 abi: JSON.parse(abiInput),
@@ -432,26 +433,81 @@ export default function Interact() {
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-1">Network</label>
-                            <select
-                                value={selectedChainId}
-                                onChange={(e) => {
-                                    const chainId = e.target.value as ChainName;
-                                    setSelectedChainId(chainId);
-                                    // Update RPC URL when chain changes
-                                    const chain = availableChains.find(c => c.id === chainId);
-                                    if (chain?.rpcUrls?.default?.http?.[0]) {
-                                        setRpcUrl(chain.rpcUrls.default.http[0]);
-                                    }
-                                }}
-                                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
-                            >
-                                <option value="">Select Network</option>
-                                {availableChains.map((chain) => (
-                                    <option key={chain.id} value={chain.id as ChainName}>
-                                        {chain.name}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="text-gray-900">
+                                <Select
+                                    value={selectedChain}
+                                    onChange={(selectedOption) => {
+                                        setSelectedChain(selectedOption);
+                                        if (selectedOption) {
+                                            const chain = availableChains.find(c => c.id === selectedOption.value);
+                                            if (chain?.rpcUrls?.default?.http?.[0]) {
+                                                setRpcUrl(chain.rpcUrls.default.http[0]);
+                                            }
+                                        }
+                                    }}
+                                    options={availableChains.map(chain => ({
+                                        value: chain.id as ChainName,
+                                        label: chain.name
+                                    }))}
+                                    classNamePrefix="react-select"
+                                    placeholder="Search network..."
+                                    isSearchable={true}
+                                    styles={{
+                                        control: (base) => ({
+                                            ...base,
+                                            backgroundColor: '#364153', // bg-gray-800
+                                            borderColor: '#4b5563', // border-gray-600
+                                            '&:hover': {
+                                                borderColor: '#6b7280' // border-gray-500
+                                            },
+
+                                        }),
+                                        menu: (base) => ({
+                                            ...base,
+                                            backgroundColor: '#1f2937', // bg-gray-800
+                                            color: 'white'
+                                        }),
+                                        option: (base, { isFocused, isSelected }) => ({
+                                            ...base,
+                                            backgroundColor: isSelected
+                                                ? '#3b82f6' // bg-blue-500 when selected
+                                                : isFocused
+                                                    ? '#374151' // bg-gray-700 when focused
+                                                    : '#1f2937', // bg-gray-800
+                                            color: isSelected ? 'white' : 'white',
+                                            '&:active': {
+                                                backgroundColor: '#3b82f6' // bg-blue-500
+                                            }
+                                        }),
+                                        singleValue: (base) => ({
+                                            ...base,
+                                            color: 'white',
+                                            textAlign: 'left',
+                                        }),
+                                        input: (base) => ({
+                                            ...base,
+                                            color: 'white',
+                                            textAlign: 'left',
+                                        }),
+                                        placeholder: (base) => ({
+                                            ...base,
+                                            color: '#9ca3af', // text-gray-400
+                                            textAlign: 'left',
+                                        })
+                                    }}
+                                    theme={(theme) => ({
+                                        ...theme,
+                                        colors: {
+                                            ...theme.colors,
+                                            primary: '#3b82f6', // blue-500
+                                            primary25: '#1e40af', // blue-800
+                                            neutral0: '#1f2937', // bg-gray-800
+                                            neutral80: 'white',
+                                            neutral30: '#9ca3af' // text-gray-400
+                                        }
+                                    })}
+                                />
+                            </div>
                         </div>
 
                         <div>
@@ -479,7 +535,7 @@ export default function Interact() {
 
                         <button
                             onClick={parseAbiInput}
-                            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md"
+                            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-black dark:text-white font-medium rounded-md"
                         >
                             Parse ABI & Generate UI
                         </button>
