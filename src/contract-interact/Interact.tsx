@@ -1,19 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { isAddress } from 'viem';
-import { celoRPCUrl, celoToDoContractAddress } from '../constants/contract';
 import Header from "../component/Header";
-import { publicClient } from '../lib/client';
-
-// Helper function to safely stringify objects that might contain BigInt
-const safeStringify = (obj: any, indent = 2) => {
-    const replacer = (key: string, value: any) => {
-        if (typeof value === 'bigint') {
-            return value.toString();
-        }
-        return value;
-    };
-    return JSON.stringify(obj, replacer, indent);
-};
+import publicClient, { availableChains, type ChainName } from '../lib/client';
 
 type FunctionInput = {
     name: string;
@@ -25,7 +14,7 @@ type ContractFunction = {
     name: string;
     type: 'function' | 'constructor' | 'event' | 'fallback';
     inputs: FunctionInput[];
-    outputs?: { type: string; name?: string }[];
+    outputs?: { type: string; name?: string; components?: { type: string; name?: string }[] }[];
     stateMutability: 'view' | 'pure' | 'nonpayable' | 'payable';
 };
 
@@ -33,9 +22,163 @@ type FunctionState = {
     [key: string]: { [key: string]: string };
 };
 
+// Check if the result matches EIP-712 domain structure
+const isEIP712Domain = (obj: any) => {
+    const keys = obj ? Object.keys(obj) : [];
+    return (
+        keys.includes('name') &&
+        keys.includes('version') &&
+        keys.includes('chainId') &&
+        keys.includes('verifyingContract') &&
+        keys.includes('salt')
+    );
+};
+
+// Helper to format EIP-712 domain data
+const renderEIP712Domain = (domain: any) => {
+    const fields = [
+        { key: 'name', label: 'Name', type: 'string' },
+        { key: 'version', label: 'Version', type: 'string' },
+        { key: 'chainId', label: 'Chain ID', type: 'uint256' },
+        { key: 'verifyingContract', label: 'Verifying Contract', type: 'address' },
+        { key: 'salt', label: 'Salt', type: 'bytes32' },
+        { key: 'extensions', label: 'Extensions', type: 'uint256[]' },
+    ];
+
+    return (
+        <div className="space-y-2">
+            {fields.map(({ key, label, type }) => {
+                if (domain[key] === undefined) return null;
+
+                let value = domain[key];
+                if (key === 'salt' && value === '0x' + '0'.repeat(64)) {
+                    value = '0x000...000';
+                }
+
+                return (
+                    <div key={key} className="flex flex-wrap items-start">
+                        <span className="text-gray-400 w-40 break-words pr-2">
+                            {label} ({type}):
+                        </span>
+                        <div className="flex-1 min-w-0">
+                            <div className="bg-gray-800 p-2 rounded break-all font-mono text-sm">
+                                <div className="w-full overflow-x-auto">
+                                    {renderValue(value, type)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+};
+
+const renderResult = (result: any, outputTypes?: { type: string; name?: string }[]) => {
+    if (result === undefined || result === null) {
+        return <div className="text-gray-400 italic">No return value</div>;
+    }
+
+    // Handle array results
+    if (Array.isArray(result)) {
+        if (result.length === 0) {
+            return <span className="text-gray-400">[]</span>;
+        }
+        return (
+            <div className="space-y-2">
+                {result.map((item, index) => (
+                    <div key={index} className="p-2 bg-gray-800 rounded">
+                        {renderResult(item, outputTypes?.[index] ? [outputTypes[index]] : undefined)}
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    // Handle EIP-712 domain data
+    if (isEIP712Domain(result)) {
+        return renderEIP712Domain(result);
+    }
+
+    // Handle other object results
+    if (typeof result === 'object') {
+        // Check if it's a tuple/struct with named fields
+        const entries = Object.entries(result);
+        if (entries.length > 0) {
+            return (
+                <div className="grid grid-cols-1 gap-2">
+                    {entries.map(([key, value]) => {
+                        // Skip numeric keys (array indices)
+                        if (!isNaN(Number(key))) return null;
+
+                        // Find the output type for this field
+                        const outputType = outputTypes?.find(ot => ot.name === key) ||
+                            outputTypes?.[Number(key)] ||
+                            { type: typeof value };
+
+                        return (
+                            <div key={key} className="flex flex-wrap items-start">
+                                <span className="text-gray-400 w-32 break-words pr-2">
+                                    {key} ({outputType?.type || typeof value}):
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="bg-gray-800 p-2 rounded break-all font-mono text-sm">
+                                        <div className="w-full overflow-x-auto">
+                                            {renderValue(value, outputType?.type)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        }
+    }
+
+    // Handle primitive values
+    return (
+        <div className="w-full overflow-x-auto">
+            <span className="text-white break-all font-mono text-sm">
+                {renderValue(result)}
+            </span>
+        </div>
+    );
+};
+
+const renderValue = (value: any, type?: string) => {
+    // Special handling for empty arrays
+    if (Array.isArray(value) && value.length === 0) {
+        return <span className="text-gray-400">[]</span>;
+    }
+
+    // Special handling for addresses and hashes
+    if (type === 'address' || (typeof value === 'string' && value.startsWith('0x') && value.length === 42)) {
+        return (
+            <span className="font-mono break-all text-sm">
+                {value}
+            </span>
+        );
+    }
+    if (value === null || value === undefined) return 'null';
+
+    // Format based on type hint if available
+    if (type) {
+        if (type.includes('int')) return value.toString();
+        if (type === 'bool') return value ? 'true' : 'false';
+        if (type === 'address') return value;
+    }
+
+    // Default formatting
+    if (typeof value === 'boolean') return value ? 'true' : 'false';
+    if (typeof value === 'object') return JSON.stringify(value, null, 2);
+    return String(value);
+};
+
 export default function Interact() {
-    const [rpcUrl, setRpcUrl] = useState(celoRPCUrl);
-    const [contractAddress, setContractAddress] = useState(celoToDoContractAddress);
+    const [rpcUrl, setRpcUrl] = useState("");
+    const [contractAddress, setContractAddress] = useState("");
+    const [selectedChainId, setSelectedChainId] = useState<ChainName>('sepolia');
     const [abiInput, setAbiInput] = useState('');
     const [functions, setFunctions] = useState<ContractFunction[]>([]);
     const [functionStates, setFunctionStates] = useState<FunctionState>({});
@@ -113,8 +256,8 @@ export default function Interact() {
             const args = func.inputs.map((input, index) => {
                 const inputName = input.name || `param_${index}`;
                 // Try to parse the input value based on its type
-                let value = inputValues[inputName] || '';
-                
+                const value = inputValues[inputName] || '';
+
                 // Basic type conversion
                 try {
                     if (input.type.includes('int')) {
@@ -131,12 +274,20 @@ export default function Interact() {
                     console.error(`Error parsing ${inputName}:`, err);
                     throw new Error(`Invalid value for ${inputName}: ${(err as Error).message}`);
                 }
-                
+
                 return value;
             });
 
             // Make the actual contract call
-            const res = await publicClient.readContract({
+            if (!selectedChainId) {
+                throw new Error('Please select a network');
+            }
+            const client = publicClient({ 
+                chainName: selectedChainId,
+                rpcUrl: rpcUrl
+            });
+            
+            const res = await client.readContract({
                 address: contractAddress as `0x${string}`,
                 abi: JSON.parse(abiInput),
                 functionName: func.name,
@@ -222,20 +373,52 @@ export default function Interact() {
                     onClick={() => callFunction(func)}
                     disabled={isLoading}
                     className={`w-full py-2 px-4 rounded-md ${isView
-                            ? 'bg-blue-600 hover:bg-blue-700'
-                            : 'bg-yellow-600 hover:bg-yellow-700'
+                        ? 'bg-blue-600 hover:bg-blue-700'
+                        : 'bg-yellow-600 hover:bg-yellow-700'
                         } text-white font-medium disabled:opacity-50`}
                 >
                     {isLoading ? 'Processing...' : isView ? 'Read' : 'Write'}
                 </button>
 
-                {result && (
-                    <div className="mt-3 p-2 bg-gray-700 rounded text-sm overflow-auto">
-                        <pre className="whitespace-pre-wrap text-gray-200">
-                            {safeStringify(result)}
-                        </pre>
-                    </div>
-                )}
+                {result && (() => {
+                    const func = functions.find(f => f.name === result.function);
+                    const hasReturnValue = func?.outputs && func.outputs.length > 0 &&
+                        !(func.outputs.length === 1 && func.outputs[0].type === 'tuple' &&
+                            func.outputs[0].components?.length === 0);
+
+                    return (
+                        <div className="mt-3 bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                            <div className="p-4">
+                                <div className="mb-3">
+                                    <h4 className="text-sm font-semibold text-blue-400 mb-1">
+                                        {result.function} {hasReturnValue ? 'Result' : 'Transaction'}
+                                    </h4>
+                                    <div className="text-xs text-gray-400">
+                                        {new Date(result.timestamp).toLocaleString()}
+                                    </div>
+                                </div>
+
+                                {hasReturnValue ? (
+                                    <div className="bg-gray-900 rounded-lg mt-2 max-h-96 overflow-y-auto">
+                                        <div className="p-4">
+                                            {renderResult(result.result, func?.outputs)}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="mt-2 p-3 bg-green-900/20 border border-green-800/50 rounded-lg text-sm text-green-300">
+                                        ✓ Transaction completed successfully
+                                    </div>
+                                )}
+
+                                {result.note && (
+                                    <div className="mt-3 text-xs text-gray-400 italic">
+                                        {result.note}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
         );
     };
@@ -244,7 +427,7 @@ export default function Interact() {
         <div className="min-h-screen text-white">
             <Header />
 
-            <div className="container mx-auto p-4 max-w-4xl">
+            <div className="container mx p-4 md:w-full max-w-8xl">
                 <h2 className="text-2xl font-bold mb-6">Smart Contract Interaction</h2>
 
                 <div className="bg-gray-800 p-6 rounded-lg mb-8">
@@ -260,6 +443,30 @@ export default function Interact() {
                                 placeholder="https://..."
                                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-1">Network</label>
+                            <select
+                                value={selectedChainId}
+                                onChange={(e) => {
+                                    const chainId = e.target.value as ChainName;
+                                    setSelectedChainId(chainId);
+                                    // Update RPC URL when chain changes
+                                    const chain = availableChains.find(c => c.id === chainId);
+                                    if (chain?.rpcUrls?.default?.http?.[0]) {
+                                        setRpcUrl(chain.rpcUrls.default.http[0]);
+                                    }
+                                }}
+                                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white"
+                            >
+                                <option value="">Select Network</option>
+                                {availableChains.map((chain) => (
+                                    <option key={chain.id} value={chain.id as ChainName}>
+                                        {chain.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div>
@@ -303,7 +510,7 @@ export default function Interact() {
                 {functions.length > 0 && (
                     <div>
                         <h3 className="text-xl font-semibold mb-4">Contract Functions</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             {functions.map(renderFunctionCard)}
                         </div>
                     </div>
