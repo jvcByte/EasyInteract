@@ -7,7 +7,7 @@ export default function Interact() {
                 <Header />
             </div>
             <div>
-                <h2 className="font-bold p-2 text-2xl">Interact</h2>
+                <h2 className="font-bold p-2 text-2xl">Input Contract Details</h2>
                 <div className="flex flex-col gap-2">
                     <input
                         type="text"
