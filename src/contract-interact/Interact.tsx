@@ -4,20 +4,7 @@ import { isAddress } from 'viem';
 import Select from 'react-select';
 import Header from "../component/Header";
 import publicClient, { availableChains, type ChainName } from '../lib/client';
-
-type FunctionInput = {
-    name: string;
-    type: string;
-    internalType: string;
-};
-
-type ContractFunction = {
-    name: string;
-    type: 'function' | 'constructor' | 'event' | 'fallback';
-    inputs: FunctionInput[];
-    outputs?: { type: string; name?: string; components?: { type: string; name?: string }[] }[];
-    stateMutability: 'view' | 'pure' | 'nonpayable' | 'payable';
-};
+import { type ContractFunction } from '../lib/types';
 
 type FunctionState = {
     [key: string]: { [key: string]: string };

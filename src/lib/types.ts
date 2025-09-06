@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type ByteString = `0x${string}`;
 
 export interface EthereumProvider {
@@ -21,4 +22,37 @@ interface CreateTaskProps {
     accounts: Array<ByteString>;
 }
 
-export type { ByteString, WindowEthereum, CreateTaskProps };
+type functionComponent = {
+    name: string;
+    type: string;
+}
+
+type FunctionInput = {
+    name: string;
+    type: string;
+    internalType: string;
+};
+
+type FunctionOutput = {
+    type: string;
+    name?: string;
+    components?: functionComponent[];
+};
+
+type ContractFunction = {
+    name: string;
+    type: 'function' | 'constructor' | 'event' | 'fallback';
+    inputs: FunctionInput[];
+    outputs?: FunctionOutput[];
+    stateMutability: 'view' | 'pure' | 'nonpayable' | 'payable';
+};
+
+export type {
+    ByteString,
+    WindowEthereum,
+    CreateTaskProps,
+    functionComponent,
+    FunctionInput,
+    FunctionOutput,
+    ContractFunction
+};
