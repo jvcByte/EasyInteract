@@ -290,10 +290,12 @@ export default function Interact() {
                     <button
                         onClick={() => callFunction(func, false)}
                         disabled={isLoading}
-                        className={`flex-1 py-2 px-4 rounded-md ${isView
+                        className={
+                            `flex-1 py-2 px-4 rounded-md ${isView
                                 ? 'bg-blue-600 hover:bg-blue-700'
                                 : 'bg-yellow-600 hover:bg-yellow-700'
-                            } text-white font-medium disabled:opacity-50`}
+                            } text-white font-medium disabled:opacity-50`
+                        }
                     >
                         {isLoading ? 'Processing...' : isView ? 'Read' : 'Write'}
                     </button>

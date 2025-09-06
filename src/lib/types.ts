@@ -14,7 +14,14 @@ export interface EthereumProvider {
     chainId?: string; //-->suggested by EIP-1193
 }
 
-type WindowEthereum = typeof window & {
+// Extend the global Window interface
+declare global {
+    interface Window {
+        ethereum?: EthereumProvider;
+    }
+}
+
+type WindowEthereum = Window & {
     ethereum?: EthereumProvider;
 };
 
