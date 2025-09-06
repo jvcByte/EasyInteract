@@ -4,11 +4,8 @@ import { isAddress } from 'viem';
 import Select from 'react-select';
 import Header from "../component/Header";
 import publicClient, { availableChains, type ChainName } from '../lib/client';
-import { type ContractFunction } from '../lib/types';
+import { type ContractFunction, type FunctionState } from '../lib/types';
 
-type FunctionState = {
-    [key: string]: { [key: string]: string };
-};
 
 // Check if the result matches EIP-712 domain structure
 const isEIP712Domain = (obj: any) => {

@@ -47,6 +47,10 @@ type ContractFunction = {
     stateMutability: 'view' | 'pure' | 'nonpayable' | 'payable';
 };
 
+type FunctionState = {
+    [key: string]: { [key: string]: string };
+};
+
 export type {
     ByteString,
     WindowEthereum,
@@ -54,5 +58,6 @@ export type {
     functionComponent,
     FunctionInput,
     FunctionOutput,
-    ContractFunction
+    ContractFunction,
+    FunctionState
 };
