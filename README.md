@@ -1,4 +1,4 @@
-# Todo DApp Project Overview
+# DApp Project Overview - EasyInteract
 This is a collection of decentralized applications (DApps). Has 3 main sections, Easy Interact section, ToDo section, and ERC20  interaction section. 
 
 ### Easy Interact Section
