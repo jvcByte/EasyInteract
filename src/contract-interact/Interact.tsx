@@ -260,7 +260,7 @@ export default function Interact() {
 
             <div className="flex flex-row gap-4 w-full p-4">
                 
-                <div className="col-span-1 bg-gray-800 p-6 rounded-lg mb-8">
+                <div className="bg-gray-800 p-6 rounded-lg mb-8">
                     <h3 className="text-xl font-semibold mb-4">Contract Details</h3>
 
                     <div className="space-y-4">
